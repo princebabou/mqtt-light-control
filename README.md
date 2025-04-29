@@ -133,13 +133,13 @@ Your frontend must:
 
 ---
 
-## Troubleshooting
+# Troubleshooting
 
-# Serial Monitor (Physical Device)
+## Serial Monitor (Physical Device)
 cu -l /dev/ttyUSB0 -s 9600
 
-# MQTT Traffic Analysis
+## MQTT Traffic Analysis
 mosquitto_sub -h 157.173.101.159 -t "lumina/#" -v
 
-# WebSocket Debug
+## WebSocket Debug
 websocat ws://localhost:8765
