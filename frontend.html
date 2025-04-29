@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lumina Control Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient-1: #0f0c29;
+      --bg-gradient-2: #302b63;
+      --bg-gradient-3: #24243e;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --primary: #8A63D2;
+      --primary-hover: #9B7ADB;
+      --text: #F0F0F5;
+      --subtext: #A0A4B8;
+      --border: rgba(255, 255, 255, 0.1);
+      --success: #6DD88A;
+      --error: #FF6B6B;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: var(--glass-bg);
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 480px;
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(138, 99, 210, 0.1), transparent);
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      background: var(--glass-bg);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .logo svg {
+      width: 32px;
+      height: 32px;
+      fill: var(--primary);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(to right, var(--primary), var(--primary-hover));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--subtext);
+      line-height: 1.5;
+    }
+
+    .schedule-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .time-input {
+      position: relative;
+      background: var(--glass-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .time-input:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .time-input label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--subtext);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="time"] {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-family: 'Inter', sans-serif;
+      padding: 0.5rem 0;
+      appearance: none;
+    }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.6;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    input[type="time"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+    }
+
+    button {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    button:hover::after {
+      opacity: 1;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(138, 99, 210, 0.3);
+    }
+
+    .connection-status {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--glass-bg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid var(--border);
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--error);
+      position: relative;
+    }
+
+    .status-indicator::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+      border: 2px solid var(--error);
+    }
+
+    .status-indicator.connected {
+      background: var(--success);
+    }
+
+    .status-indicator.connected::after {
+      border-color: var(--success);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(200%);
+      background: var(--glass-bg);
+      color: var(--text);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M12,2L9,6L12,10H15V14H17V10H20L17,6L20,2H15V6H13V2H12M9,8C6.79,8 5,9.79 5,12C5,14.21 6.79,16 9,16C10.5,16 11.82,15.18 12.5,14H14C13.37,15.33 12.11,16.4 10.5,16.8V20H13.5V18.3C15.92,17.77 17.5,15.69 17.5,13.2C17.5,10.31 15.21,8 12.5,8H9M3,14C2.45,14 2,13.55 2,13C2,12.45 2.45,12 3,12H5V14H3M19,12C19.55,12 20,12.45 20,13C20,13.55 19.55,14 19,14H17V12H19M12,15C11.45,15 11,14.55 11,14C11,13.45 11.45,13 12,13C12.55,13 13,13.45 13,14C13,14.55 12.55,15 12,15Z"/>
+        </svg>
+      </div>
+      <h1>Lumina Control Hub</h1>
+      <p class="subtitle">Automate your lighting with precision scheduling and real-time monitoring</p>
+    </div>
+
+    <div class="schedule-grid">
+      <div class="time-input">
+        <label for="onTime">Sunrise Activation</label>
+        <input type="time" id="onTime">
+      </div>
+
+      <div class="time-input">
+        <label for="offTime">Sunset Deactivation</label>
+        <input type="time" id="offTime">
+      </div>
+    </div>
+
+    <button onclick="submitSchedule()">Sync Schedule</button>
+
+    <div class="connection-status">
+      <div class="status-indicator" id="statusIndicator"></div>
+      <span id="statusText">Establishing Connection...</span>
+    </div>
+  </div>
+
+  <div class="notification" id="notification">Schedule synchronized successfully!</div>
+
+  <script>
+    // Keep the original JavaScript functionality unchanged
+    let socket = new WebSocket("ws://localhost:8765");
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    const notification = document.getElementById('notification');
+
+    socket.onopen = () => {
+      console.log("✅ WebSocket Connected!");
+      statusIndicator.classList.add('connected');
+      statusText.textContent = "Connected to Lumina Network";
+    };
+
+    socket.onclose = () => {
+      statusIndicator.classList.remove('connected');
+      statusText.textContent = "Disconnected - Attempting to reconnect...";
+    };
+
+    socket.onerror = () => {
+      statusIndicator.classList.remove('connected');
+      statusText.textContent = "Connection Error - Check Network";
+    };
+
+    function submitSchedule() {
+      const onTime = document.getElementById('onTime').value;
+      const offTime = document.getElementById('offTime').value;
+
+      if (onTime) socket.send(`${onTime} ON`);
+      if (offTime) socket.send(`${offTime} OFF`);
+
+      notification.classList.add('show');
+      setTimeout(() => notification.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
